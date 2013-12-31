@@ -38,7 +38,7 @@
         <script type="text/javascript">
             // based on goblin's p2pool-stats project
 			var period = "day";
-
+			var symbol = "N/A";
 			function LoadData()
 			{
 				$("#blocks").html("<tr><th>ID</th><th>Time</th><th>Hash / Explorer link</th><th>Share</th></tr>");
@@ -50,27 +50,28 @@
 			    });
 			    
 			    d3.json('../web/currency_info', function(currency_info) {
-				d3.selectAll('.symbol').text(currency_info.symbol);
+					d3.selectAll('.symbol').text(currency_info.symbol);
+					symbol = new String(currency_info.symbol);
 				
-				d3.json('../current_payouts', function(pays) {
-				    var arr = []; for(var i in pays) arr.push(i); arr.sort(function(a, b){return pays[b] - pays[a]});
+					d3.json('../current_payouts', function(pays) {
+					    var arr = []; for(var i in pays) arr.push(i); arr.sort(function(a, b){return pays[b] - pays[a]});
 				    
-				    var tr = d3.select('#payouts').selectAll().data(arr).enter().append('tr');
-				    tr.append('td').append('a').text(function(addr){return addr}).attr('href', function(addr){return currency_info.address_explorer_url_prefix + addr});
-				    tr.append('td').text(function(addr){return pays[addr]});
+					    var tr = d3.select('#payouts').selectAll().data(arr).enter().append('tr');
+					    tr.append('td').append('a').text(function(addr){return addr}).attr('href', function(addr){return currency_info.address_explorer_url_prefix + addr});
+					    tr.append('td').text(function(addr){return pays[addr]});
 				    
-				    var total_tr = d3.select('#payouts').append('tr');
-				    total_tr.append('td').append('strong').text('Total');
-				    total_tr.append('td').text(d3.sum(arr, function(addr){return pays[addr]}).toFixed(8));
-				});
+					    var total_tr = d3.select('#payouts').append('tr');
+					    total_tr.append('td').append('strong').text('Total');
+					    total_tr.append('td').text(d3.sum(arr, function(addr){return pays[addr]}).toFixed(8));
+					});
 				
-				d3.json('../recent_blocks', function(blocks) {
-				    var tr = d3.select('#blocks').selectAll().data(blocks).enter().append('tr');
-				    tr.append('td').text(function(block){return block.number});
-				    tr.append('td').text(function(block){return new Date(1000*block.ts).toString()});
-				    tr.append('td').append('a').text(function(block){return block.hash}).attr('href', function(block){return currency_info.block_explorer_url_prefix + block.hash});
-				    tr.append('td').append('a').text('→').attr('href', function(block){return 'share.html#' + block.share});
-				});
+					d3.json('../recent_blocks', function(blocks) {
+					    var tr = d3.select('#blocks').selectAll().data(blocks).enter().append('tr');
+					    tr.append('td').text(function(block){return block.number});
+					    tr.append('td').text(function(block){return new Date(1000*block.ts).toString()});
+					    tr.append('td').append('a').text(function(block){return block.hash}).attr('href', function(block){return currency_info.block_explorer_url_prefix + block.hash});
+					    tr.append('td').append('a').text('→').attr('href', function(block){return 'share.html#' + block.share});
+					});
 			    });
 			    
 				$("#best_share").html("");
@@ -115,8 +116,7 @@
 					d3.select('#shares_orphan').text(local_stats.shares.orphan);
 					d3.select('#shares_dead').text(local_stats.shares.dead);
 
-					document.title=d3.format('.3s')(local) + 'H/s (' + d3.format('.2p')(local_dead/local)
-                                                        + ') | ' + local_stats.shares.total + ' | P2Pool';
+					document.title=d3.format('.3s')(local) + 'H/s | ' + local_stats.shares.total + ' | P2Pool (' + symbol + ')';
 					
 					d3.select('#efficiency').text(local_stats.efficiency != null ? d3.format('.4p')(local_stats.efficiency) : '???')
 					d3.select('#uptime_days').text(d3.format('.3f')(local_stats.uptime / 60 / 60 / 24));
