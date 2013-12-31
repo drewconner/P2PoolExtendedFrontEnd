@@ -103,11 +103,6 @@
 			</div>
 			<br/>
 			<div class="well" style="width:1000px"> 	
-				<h2>Current payout to default address</h2>
-				<svg id="payout"></svg>
-			</div>
-			<br/>
-			<div class="well" style="width:1000px"> 	
 				<h2>Pool rate</h2>
 				<svg id="pool"></svg>
 			</div>
@@ -511,9 +506,6 @@
                 d3.json("../web/graph_data/local_share_hash_rates/last_" + lowerperiod, function(data) {
                     plot(d3.select('#local_shares'), 'H/s', 'H', data_to_lines(data), true);
                 });
-                plot_later(d3.select("#payout"), currency_info.symbol, null, [
-                    {"url": "../web/graph_data/current_payout/last_" + lowerperiod, "color": "#0000FF"}
-                ]);
                 d3.json("../web/graph_data/pool_rates/last_" + lowerperiod, function(data) {
                     plot(d3.select('#pool'), 'H/s', 'H', data_to_lines(data), true);
                 });
