@@ -53,11 +53,6 @@
 				d3.selectAll('.symbol').text(currency_info.symbol);
 				
 				d3.json('../current_payouts', function(pays) {
-				    d3.json('../payout_addr', function(addr) {
-				        d3.select('#payout_addr').text(addr).attr('href', currency_info.address_explorer_url_prefix + addr);
-					d3.select('#payout_amount').text(addr in pays ? pays[addr] : 0);
-				    });
-				    
 				    var arr = []; for(var i in pays) arr.push(i); arr.sort(function(a, b){return pays[b] - pays[a]});
 				    
 				    var tr = d3.select('#payouts').selectAll().data(arr).enter().append('tr');
@@ -100,18 +95,9 @@
 			    fill('../web/tails', '#tails');
 			    fill('../web/my_share_hashes', '#my_share_hashes');
 			}
-
-			var price_usd,price_eur;
-			function UpdatePrice()
-                        {
-                                d3.json('https://api.bitcoinaverage.com/no-mtgox/all', function(price_data) {
-                                        d3.select('#price_eur').text(price_eur=price_data.EUR.averages.last);
-                                        d3.select('#price_usd').text(price_usd=price_data.USD.averages.last);
-                                });
-                        }
 			
-                        var plot1;
-                        var plot2;
+			var plot1;
+			var plot2;
 			function UpdateData()
 			{
 				function values(o){ res = []; for(var x in o) res.push(o[x]); return res; }
@@ -154,10 +140,6 @@
 						d3.select('#time_to_block').text(d3.format('.3r')(time_to_block/3600) + " hours");
 
 						var expected = local/global_stats.pool_hash_rate*local_stats.block_value*(1-local_stats.donation_proportion);
-						var expected_day = (24/(time_to_block/3600))*expected;
-						d3.select('#price_eur_day').text(d3.format('.2f')(price_eur*expected_day));
-                                                d3.select('#price_usd_day').text(d3.format('.2f')(price_usd*expected_day));
-						
 						d3.select('#expected_payout_amount').text(d3.format('.3r')(expected));
 										  
 										  
@@ -208,15 +190,7 @@
 					  legend: { show:true, location: 'e' }
 					}
 				  );
-				  
-
-				  
-				  
-				  
 			    });
-			
-
-				
 				
 				/// pool speed grapg
 				plot_later(d3.select("#main-local"), "H/s", "H", [
@@ -241,13 +215,6 @@
 				UpdateData();
 			}
 		}
-		function AutoRefreshPrice()
-                {
-                        if($("#autorefresh").prop('checked'))
-                        {
-                                UpdatePrice();
-                        }
-                }
         </script>
     </head>
     <body>
@@ -311,16 +278,9 @@
 							  <td><h5>Shares</h5></td>
 							  <td><span id="shares_total" class="label"></span> total (<span id="shares_orphan" class="label label-warning"></span> orphaned, <span id="shares_dead" class="label label-warning"></span> dead) Efficiency: <span class="label label-info" id="efficiency"></span></td>
 							  <td></td>
-							  <td><h5>Payout if a block were found NOW</h5></td>
-							  <td><span id="payout_amount" class="label"></span> <span class="symbol"></span></td>
-							</tr>
-							<tr>
-                                                          <td><h5>Payout Address</h5></td>
-                                                          <td><a id="payout_addr"></a></td>
-                                                          <td></td>
-                                                          <td><h5>Expected after mining for 24 hours</h5></td>
-                                                          <td><span id="expected_payout_amount" class="label"></span> <span class="symbol"></span> per block.</td>
-                                                        </tr>
+							  <td><h5>Expected after mining for 24 hours</h5></td>
+							  <td><span id="expected_payout_amount" class="label"></span> <span class="symbol"></span> per block.</td>
+						    </tr>
 							<tr>
 							  <td><h5>Pool rate</h5></td>
 							  <td><span id="pool_rate" class="label label-inverse"></span> (<span id="pool_stale"></span> DOA+orphan)</td>
@@ -342,20 +302,6 @@
 							  <td><h5>Expected time to block</h5></td>
 							  <td><span id="time_to_block" class="label"></span></td>
 							</tr>
-                                                        <tr>
-                                                          <td><h5>BTC price in €</h5></td>
-                                                          <td><span id="price_eur" class="label"></span> €</td>
-                                                          <td></td>
-                                                          <td><h5>BTC price in $</h5></td>
-                                                          <td><span id="price_usd" class="label"></span> $</td>
-                                                        </tr>
-                                                        <tr>
-                                                          <td><h5>Expected earnings in € per day</h5></td>
-                                                          <td><span id="price_eur_day" class="label"></span> €</td>
-                                                          <td></td>
-                                                          <td><h5>Expected earnings in $ per day</h5></td>
-                                                          <td><span id="price_usd_day" class="label"></span> $</td>
-                                                        </tr>
 						</tbody>
 					</table>
 				</div>
@@ -396,7 +342,6 @@
 	<center>
         <tt>P2Pool version: <span id="version"></span></tt><br/>
 		<tt>Interface by hardcpp <a href="https://github.com/hardcpp/P2PoolExtendedFrontEnd">https://github.com/hardcpp/P2PoolExtendedFrontEnd</a></tt><br/>
-		<tt>Donate if you love it (LTC LdKxw2JewLdo1atDsQ33LiCG9ZUDQ4XmPb) (BTC 1FBa12SPET7YRGHoTXyawp1EBJyFPzju31)</tt>
 	</center>
 		<br/>
 		<script type="text/javascript">
@@ -688,7 +633,6 @@
 		<script type="text/javascript">
 		$(document).ready(function() {
 			LoadData();
-			UpdatePrice();
 		  	UpdateData();
 			setInterval("AutoRefresh()", 5 * 1000);
 			setInterval("AutoRefreshPrice()", 60 * 1000);
